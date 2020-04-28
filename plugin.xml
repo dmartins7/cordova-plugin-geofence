@@ -19,7 +19,6 @@
         <clobbers target="geofence" />
     </js-module>
 
-    <dependency id="cordova-plugin-add-swift-support" version="2.0.2"/>
     <dependency id="cordova-plugin-compat" version=">=1.0.0" />
     <dependency id="es6-promise-plugin" />
 
@@ -81,6 +80,7 @@
     <platform name="ios">
         <hook type="after_plugin_install" src="hooks/iosAfterPluginInstall.js"/>
         <hook type="before_plugin_install" src="hooks/installDependencies.js"/>
+        <dependency id="cordova-plugin-add-swift-support" version="2.0.2"/>
         <preference name="GEOFENCE_ALWAYS_USAGE_DESCRIPTION" default="${EXECUTABLE_NAME} Would Like to Use Your Current Location Even In Background." />
         <config-file target="*-Info.plist" parent="NSLocationAlwaysUsageDescription">
             <string>$GEOFENCE_ALWAYS_USAGE_DESCRIPTION</string>
