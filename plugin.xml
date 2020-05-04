@@ -45,7 +45,7 @@
         <source-file src="src/android/RemoveGeofenceCommand.java" target-dir="src/com/cowbell/cordova/geofence" />
 
         <framework src="com.google.android.gms:play-services-location:$FCM_VERSION" />
-        <preference name="FCM_VERSION" default="16.0.1"/>
+        <preference name="FCM_VERSION" default="11.0.1"/>
         <framework src="com.google.code.gson:gson:2.8.+" />
 
         <config-file target="config.xml" parent="/*">
