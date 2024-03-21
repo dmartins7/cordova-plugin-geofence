@@ -119,7 +119,7 @@
         <source-file src="src/ios/GeofencePlugin.swift"/>
         <source-file src="src/ios/SwiftData.swift"/>
         <source-file src="src/ios/SwiftyJson.swift"/>
-        <!--<framework src="libsqlite3.dylib"/> -->
+        <framework src="libsqlite3.tbd"/>
         <framework src="WebKit.framework" weak="true" />
     </platform>
 </plugin>
