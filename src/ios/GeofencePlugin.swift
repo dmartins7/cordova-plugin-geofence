@@ -26,6 +26,7 @@ func log(_ messages: [String]) {
 
 @objc(HWPGeofencePlugin) class GeofencePlugin : CDVPlugin {
     lazy var geoNotificationManager = GeoNotificationManager()
+    var callbackId: String?
     
     override func pluginInitialize () {
         NotificationCenter.default.addObserver(
@@ -45,6 +46,8 @@ func log(_ messages: [String]) {
     
     @objc(initialize:) func initialize(_ command: CDVInvokedUrlCommand) {
         log(">>> Plugin initialization <<<")
+        
+        geoNotificationManager.delegate = self
         
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
         UNUserNotificationCenter.current().removeAllDeliveredNotifications()
@@ -71,6 +74,11 @@ func log(_ messages: [String]) {
         }
         
         commandDelegate!.send(result, callbackId: command.callbackId)
+    }
+    
+    @objc(didReceiveGeofenceSetCallback:)
+    func didReceiveGeofenceSetCallback(_ command: CDVInvokedUrlCommand){
+        callbackId = command.callbackId
     }
     
     @objc(deviceReady:) func deviceReady(_ command: CDVInvokedUrlCommand) {
@@ -141,6 +149,7 @@ func log(_ messages: [String]) {
     }
     
     @objc(didReceiveTransition:) func didReceiveTransition (_ notification: Notification) {
+        print("⚠️ didReceiveTransition")
         log("didReceiveTransition")
         if let geoNotificationString = notification.object as? String {
             
@@ -151,6 +160,7 @@ func log(_ messages: [String]) {
     }
     
     @objc(didReceiveLocalNotification:) func didReceiveLocalNotification (_ notification: Notification) {
+        print("⚠️ didReceiveLocalNotification")
         log("didReceiveLocalNotification")
         if UIApplication.shared.applicationState != UIApplication.State.active {
             var data = "undefined"
@@ -181,6 +191,7 @@ func log(_ messages: [String]) {
 
 
 class GeoNotificationManager : NSObject, CLLocationManagerDelegate {
+    weak var delegate: GeoNotificationManagerDelegate?
     let locationManager = CLLocationManager()
     let store = GeoNotificationStore()
     var lastEnter: Date!
@@ -233,40 +244,48 @@ class GeoNotificationManager : NSObject, CLLocationManagerDelegate {
         
         if (!CLLocationManager.isMonitoringAvailable(for: CLRegion.self)) {
             errors.append("Geofencing not available")
+            print("🚨Geofencing not available")
         }
         
         if (!CLLocationManager.locationServicesEnabled()) {
             errors.append("Error: Locationservices not enabled")
+            print("🚨Error: Locationservices not enabled")
         }
         
         let authStatus = CLLocationManager.authorizationStatus()
         
         if (authStatus != CLAuthorizationStatus.authorizedAlways) {
             warnings.append("Warning: Location always permissions not granted")
+            print("⚠️ Warning: Location always permissions not granted")
         }
         
         UNUserNotificationCenter.current().getNotificationSettings { (settings) in
             log(">>> Checking notification settings <<<")
             if settings.authorizationStatus == .authorized {
                 // Notifications are allowed
+                print("✅ Notifications are allowed")
             }
             else {
                 // Either denied or notDetermined
-                errors.append("Error: notification permission missing")
+                errors.append("🚨 Error: notification permission missing")
+                print("🚨 Error: notification permission missing")
             }
             
             if settings.soundSetting == .disabled {
                 //Sound Either denied or not Determined
-                warnings.append("Warning: notification settings - sound permission missing")
+                warnings.append("⚠️ Warning: notification settings - sound permission missing")
+                print("⚠️ Warning: notification settings - sound permission missing")
             }
             
             if settings.alertSetting == .disabled {
                 //Alert Either denied or not Determined
-                warnings.append("Warning: notification settings - alert permission missing")
+                warnings.append("⚠️ Warning: notification settings - alert permission missing")
+                print("⚠️ Warning: notification settings - alert permission missing")
             }
             
             if settings.badgeSetting == .disabled {
-                warnings.append("Warning: notification settings - badge permission missing")
+                warnings.append("⚠️ Warning: notification settings - badge permission missing")
+                print("⚠️ Warning: notification settings - badge permission missing")
             }
         }
         
@@ -378,11 +397,21 @@ class GeoNotificationManager : NSObject, CLLocationManagerDelegate {
         switch state{
         case .inside:
             log("State for region " + region.identifier + " INSIDE")
+            delegate?.didDetermineStateForRegion(state: "INSIDE")
             break
         case .outside:
+            var result = CDVPluginResult(
+                status: CDVCommandStatus_OK,
+                messageAs: "OUTSIDE"
+            )
             log("State for region " + region.identifier + " OUTSIDE")
+            delegate?.didDetermineStateForRegion(state: "OUTSIDE")
             break
         case .unknown:
+            var result = CDVPluginResult(
+                status: CDVCommandStatus_OK,
+                messageAs: "UNKNOWN"
+            )
             log("State for region " + region.identifier + " UNKNOWN")
             break
         }
@@ -528,3 +557,21 @@ class GeoNotificationStore {
         }
     }
 }
+
+protocol GeoNotificationManagerDelegate: AnyObject {
+    func didDetermineStateForRegion(state: String)
+}
+
+extension GeofencePlugin: GeoNotificationManagerDelegate {
+    func didDetermineStateForRegion(state: String) {
+        var result = CDVPluginResult(
+            status: CDVCommandStatus_OK,
+            messageAs: state
+        )
+        result?.setKeepCallbackAs(true)
+        if callbackId != nil {
+            commandDelegate!.send(result, callbackId: callbackId)
+        }
+    }
+}
+

@@ -19,8 +19,8 @@
         <clobbers target="geofence" />
     </js-module>
 
-    <!--<dependency id="cordova-plugin-compat" version=">=1.0.0" />
-    <dependency id="es6-promise-plugin" />-->
+    <dependency id="cordova-plugin-compat" version=">=1.0.0" />
+    <dependency id="es6-promise-plugin" />
 
 <!-- android -->
     <platform name="android">
