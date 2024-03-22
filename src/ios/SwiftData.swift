@@ -2,7 +2,6 @@
 // SwiftData.swift
 //
 // Copyright (c) 2014 Ryan Fowler
-// Updated 2020 by André Grillo - OutSystems Experts
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,8 +24,6 @@
 
 import Foundation
 import UIKit
-import SQLite3
-
 
 
 // MARK: - SwiftData
@@ -175,7 +172,7 @@ public struct SwiftData {
             for sqlStr in sqlArr {
                 if let err = SQLiteDB.sharedInstance.executeChange(sqlStr) {
                     SQLiteDB.sharedInstance.close()
-                    if let index = sqlArr.firstIndex(of: sqlStr) {
+                    if let index = sqlArr.index(of: sqlStr) {
                         print("Error occurred on array item: \(index) -> \"\(sqlStr)\"")
                     }
                     error = err
@@ -1258,10 +1255,7 @@ public struct SwiftData {
             inTransaction = false
 
             if let err = error {
-                let rollbackError = rollbackTransaction()
-                if rollbackError != nil {
-                    print("Rollback Error")
-                }
+                rollbackTransaction()
                 return err
             }
 
