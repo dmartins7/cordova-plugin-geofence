@@ -64,6 +64,29 @@ module.exports = {
         return execPromise(success, error, "GeofencePlugin", "removeAll", []);
     },
     /**
+     * requestPushNotificationPermission 
+     *
+     * @name  requestPushNotificationPermission
+     * @param  {Function} success callback
+     * @param  {Function} error callback
+     * @return {Promise}
+     */
+    requestPushNotificationPermission: function (success, error) {
+        return execPromise(success, error, "GeofencePlugin", "requestPushNotificationPermission", []);
+    },
+    
+    /**
+     * checkPushNotificationPermission
+     *
+     * @name  checkPushNotificationPermission
+     * @param  {Function} success callback
+     * @param  {Function} error callback
+     * @return {Promise}
+     */
+    checkPushNotificationPermission: function (success, error) {
+        return execPromise(success, error, "GeofencePlugin", "checkPushNotificationPermission", []);
+    },
+    /**
      * Getting all watched geofences from the device
      *
      * @name  getWatched
