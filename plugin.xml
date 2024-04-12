@@ -23,6 +23,8 @@
     <dependency id="es6-promise-plugin" />
 
 <!-- android -->
+    
+    <!-- Commented code to not build for Android for now, we need to fix a few issue before uncomment here
     <platform name="android">
         <source-file src="src/android/AbstractGoogleServiceCommand.java" target-dir="src/com/cowbell/cordova/geofence" />
         <source-file src="src/android/AddGeofenceCommand.java" target-dir="src/com/cowbell/cordova/geofence" />
@@ -82,7 +84,7 @@
         </config-file>
 
     </platform>
-
+    -->
     <!-- ios -->
     <platform name="ios">
         <!--<hook type="after_plugin_install" src="hooks/iosAfterPluginInstall.js" /> -->
