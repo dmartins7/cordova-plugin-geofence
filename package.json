@@ -5,7 +5,6 @@
   "cordova": {
     "id": "cordova-plugin-geofence",
     "platforms": [
-      "android",
       "ios",
       "wp8",
       "windows8",
